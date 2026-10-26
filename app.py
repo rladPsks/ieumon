@@ -11,9 +11,9 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
-from src.dashboard.dashboard_data import (  # noqa: E402
+from dashboard_data import (  # noqa: E402
     answer_question, case_label, dashboard_summary, evidence_rows,
     filter_reports, load_agent_payload, load_evaluation, public_case_id,
 )
