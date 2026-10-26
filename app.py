@@ -12,7 +12,7 @@ import streamlit as st
 from analysis_data import (
     FEATURE_LABELS,
     TYPE_GUIDE,
-    generate_with_gemini,
+    generate_with_qwen,
     load_analytics,
     public_llm_context,
 )
@@ -33,19 +33,25 @@ EVALUATION = ROOT / "demo/final_policy_agent_demo_eval.json"
 st.set_page_config(page_title="이음ON | 사회적 고립 예방 분석 Agent", page_icon="◉", layout="wide")
 st.markdown("""
 <style>
-.stApp{background:#f5f7fb;color:#142033}[data-testid="stHeader"]{background:rgba(245,247,251,.92)}
+.stApp{background:#fff9e9;color:#111}[data-testid="stHeader"]{background:rgba(255,249,233,.94)}
 .block-container{max-width:1480px;padding-top:1.25rem;padding-bottom:2.5rem}
-[data-testid="stSidebar"]{border-right:1px solid #e1e7ef;background:#fbfcfe}
-.hero{padding:1.8rem 2rem;border-radius:22px;background:linear-gradient(120deg,#071f3d,#173f68 56%,#24736f);color:white;box-shadow:0 16px 38px rgba(7,31,61,.17);margin-bottom:1rem}
-.hero h1{font-size:2.15rem;margin:.18rem 0 .45rem;letter-spacing:-.045em}.hero p{color:#dceaf2;margin:0;line-height:1.65}
-.eyebrow{color:#79d9ce;font-weight:800;font-size:.76rem;letter-spacing:.12em}
-.pill{display:inline-block;border-radius:999px;padding:.32rem .7rem;font-size:.76rem;font-weight:750;margin:.15rem .2rem .15rem 0}
-.pill-blue{color:#16476d;background:#dfeffc}.pill-green{color:#12675f;background:#ddf5ef}.pill-amber{color:#8c5808;background:#fff0d1}.pill-gray{color:#46576b;background:#e8edf3}
-.flow{background:white;border:1px solid #e2e8f0;border-radius:17px;padding:1rem 1.05rem;min-height:132px;box-shadow:0 5px 18px rgba(20,45,75,.045)}
-.flow-num{font-size:.72rem;font-weight:800;color:#2f7d78;letter-spacing:.08em}.flow-title{font-size:1.02rem;font-weight:750;margin:.28rem 0}.flow-text{font-size:.86rem;color:#607083;line-height:1.5}
-.callout{border-left:4px solid #2f7d78;background:white;border-radius:0 14px 14px 0;padding:.85rem 1rem;margin:.5rem 0}
-div[data-testid="stMetric"]{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:.78rem 1rem;box-shadow:0 5px 16px rgba(20,45,75,.04)}
-div[data-testid="stExpander"]{background:white;border-radius:14px}.small{font-size:.82rem;color:#617083;line-height:1.55}.footer{font-size:.8rem;color:#66758a;line-height:1.6}
+[data-testid="stSidebar"]{border-right:2px solid #ffb23e;background:#fffdf7}
+.hero{padding:1.8rem 2rem;border:3px solid #ff9f43;border-radius:22px;background:linear-gradient(115deg,#ffd849,#ffb347 55%,#ff884d);color:#151515;box-shadow:7px 7px 0 #f36f4a;margin-bottom:1rem}
+.hero h1{font-size:2.15rem;margin:.18rem 0 .45rem;letter-spacing:-.045em}.hero p{color:#29200f;margin:0;line-height:1.65;font-weight:600}
+.eyebrow{color:#7b3d00;font-weight:900;font-size:.76rem;letter-spacing:.12em}
+.pill{display:inline-block;border:1px solid #ed9b2e;border-radius:999px;padding:.32rem .7rem;font-size:.76rem;font-weight:800;margin:.15rem .2rem .15rem 0}
+.pill-blue{color:#1a4e88;background:#dcecff}.pill-green{color:#245c3e;background:#dff3df}.pill-amber{color:#6d3b00;background:#ffe6a9}.pill-gray{color:#343434;background:#f1eadc}
+.flow{background:white;border:2px solid #f4a33c;border-radius:17px;padding:1rem 1.05rem;min-height:132px;box-shadow:4px 4px 0 #ffd267}
+.flow-num{font-size:.72rem;font-weight:900;color:#e86635;letter-spacing:.08em}.flow-title{font-size:1.02rem;font-weight:850;margin:.28rem 0}.flow-text{font-size:.86rem;color:#4d4538;line-height:1.5}
+.callout{border:2px solid #ffad3d;border-left:8px solid #ff754c;background:white;border-radius:12px;padding:.85rem 1rem;margin:.5rem 0}
+div[data-testid="stMetric"]{background:white;border:2px solid #f0aa45;border-radius:16px;padding:.78rem 1rem;box-shadow:4px 4px 0 #ffe08a}
+div[data-testid="stExpander"]{background:white;border:1px solid #f1b657;border-radius:14px}
+button[kind="secondary"]{border:1.5px solid #f0a03b!important;background:#fff!important;color:#171717!important}
+button[kind="secondary"]:hover{border-color:#f36f4a!important;background:#fff3cf!important}
+[data-baseweb="tab-list"]{gap:.25rem;border-bottom:2px solid #f7c35e}
+[data-baseweb="tab"]{font-weight:750;color:#3a3124}
+[aria-selected="true"]{color:#d9572b!important;border-bottom-color:#f36f4a!important}
+.small{font-size:.82rem;color:#645847;line-height:1.55}.footer{font-size:.8rem;color:#695b46;line-height:1.6}
 </style>
 """, unsafe_allow_html=True)
 
@@ -72,7 +78,7 @@ card = analytics["card"]
 
 st.markdown("""
 <div class="hero">
-  <div class="eyebrow">BIGCONTEST 2026 · SOCIAL ISOLATION PREVENTION</div>
+    <div class="eyebrow">BIGCONTEST 2026 · 생활권 활동변화 기반 복지정책 검토 AGENT</div>
   <h1>보이지 않던 생활권의 변화를, 놓치지 않는 연결로</h1>
   <p>30,466개 생활권×월 활동변화에서 5개 유형을 발견하고, 지속성과 지역 맥락을 더해<br>
   담당자가 확인할 정책 개입 후보를 제시하는 Human-in-the-loop 분석 Agent</p>
@@ -144,7 +150,7 @@ with tabs[1]:
         distribution = alt.Chart(gmm).mark_bar(cornerRadiusEnd=7).encode(
             x=alt.X("COUNT:Q", title="생활권×월 관측 수"),
             y=alt.Y("ACTIVITY_TYPE:N", title=None, sort="-x"),
-            color=alt.Color("ACTIVITY_TYPE:N", legend=None, scale=alt.Scale(scheme="teals")),
+        color=alt.Color("ACTIVITY_TYPE:N", legend=None, scale=alt.Scale(range=["#ffd447", "#ffb347", "#ff875e", "#ef5b5b", "#76b7e8"])),
             tooltip=["ACTIVITY_TYPE:N", alt.Tooltip("COUNT:Q", format=","), alt.Tooltip("SHARE:Q", format=".1%")],
         ).properties(height=310)
         st.altair_chart(distribution, width="stretch")
@@ -184,7 +190,7 @@ with tabs[2]:
     display_card["품질상태"] = display_card["CARD_CONTEXT_REVIEW_REQUIRED"].map({0:"정상", 1:"검토 필요"})
     timeline = alt.Chart(display_card).mark_circle(size=340, stroke="white", strokeWidth=2).encode(
         x=alt.X("월:N", title=None), y=alt.Y("CITY_PROXY:N", title=None),
-        color=alt.Color("CARD_CONSUMPTION_STATE:N", title="소비국면", scale=alt.Scale(range=["#dc8b35", "#2f7d78"])),
+        color=alt.Color("CARD_CONSUMPTION_STATE:N", title="소비국면", scale=alt.Scale(range=["#f06d4f", "#6caee0"])),
         shape=alt.Shape("품질상태:N", title="품질상태"),
         tooltip=["CITY_PROXY:N", "월:N", "CARD_CONSUMPTION_STATE:N", "품질상태:N", alt.Tooltip("CARD_MEMBERSHIP_PROB:Q", format=".3f")],
     ).properties(height=230)
@@ -212,7 +218,7 @@ with tabs[3]:
     bars = alt.Chart(chart_data).mark_bar(cornerRadiusEnd=5).encode(
         x=alt.X("생활권 수:Q", title="생활권 수", scale=alt.Scale(type="sqrt")),
         y=alt.Y("CITY_PROXY:N", title=None),
-        color=alt.Color("구분:N", scale=alt.Scale(range=["#cbd5e1", "#72aaa4", "#173f68"])),
+        color=alt.Color("구분:N", scale=alt.Scale(range=["#ffe7a3", "#ffb347", "#f36f4a"])),
         row=alt.Row("구분:N", header=alt.Header(labelOrient="top", labelFontWeight="bold")),
         tooltip=["CITY_PROXY:N", "구분:N", alt.Tooltip("생활권 수:Q", format=",")],
     ).properties(height=78)
@@ -262,13 +268,8 @@ with tabs[4]:
 
 with tabs[5]:
     st.markdown("### 공개 집계 결과에 자유롭게 질문하세요")
-    api_key = secret("GEMINI_API_KEY")
-    llm_model = secret("GEMINI_MODEL", "gemini-3.5-flash-lite")
-    if api_key:
-        st.success(f"생성형 분석 Agent 연결됨 · {llm_model}")
-        st.caption("외부 LLM에는 이 페이지에 포함된 집계 프로파일·도시 요약·공식 정책 후보만 전달됩니다. 원자료와 격자 식별자는 전달되지 않습니다.")
-    else:
-        st.warning("현재 배포에는 Gemini API 키가 없어 검증된 규칙 질의응답으로 동작합니다. Streamlit Secrets에 GEMINI_API_KEY를 등록하면 자유 서술형 분석이 활성화됩니다.")
+    qwen_model = secret("QWEN_MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
+    st.caption("API 키 없이 배포 서버에서 실행되는 Qwen이 GMM·카드·지속관찰·공식 정책 집계 결과를 종합합니다. 최초 질문은 모델 초기화로 다소 지연될 수 있습니다.")
     examples = [
         "5개 GMM 유형의 차이를 핵심 지표 중심으로 설명해줘",
         "춘천 370개와 강남 59개를 어떻게 해석해야 해?",
@@ -288,22 +289,18 @@ with tabs[5]:
         st.session_state.messages.append({"role": "user", "content": question})
         with st.chat_message("user"): st.markdown(question)
         with st.chat_message("assistant"):
-            if api_key:
-                try:
-                    with st.spinner("공개 집계 결과와 공식 정책 근거를 분석하고 있습니다..."):
-                        answer = generate_with_gemini(
-                            question,
-                            public_llm_context(payload, analytics),
-                            api_key,
-                            model=llm_model,
-                            history=st.session_state.messages[:-1],
-                        )
-                except RuntimeError as exc:
-                    st.error(str(exc))
-                    answer = answer_question(question, payload)["answer"]
-                    st.caption("API 오류로 검증된 로컬 응답을 표시했습니다.")
-            else:
+            try:
+                with st.spinner("Qwen이 공개 집계 결과를 종합하고 있습니다..."):
+                    answer = generate_with_qwen(
+                        question,
+                        public_llm_context(payload, analytics),
+                        model_id=qwen_model,
+                        history=st.session_state.messages[:-1],
+                    )
+            except RuntimeError as exc:
+                st.error(str(exc))
                 answer = answer_question(question, payload)["answer"]
+                st.caption("모델 실행이 불가능해 검증된 로컬 응답을 표시했습니다.")
             st.markdown(answer)
         st.session_state.messages.append({"role": "assistant", "content": answer})
     with st.expander("Agent가 답할 때 지키는 범위"):
@@ -314,7 +311,7 @@ with tabs[5]:
 
 st.divider()
 st.markdown("""
-<p class="footer"><b>생성형 AI 활용 고지</b> · 자유 질의응답이 활성화된 경우 Gemini API는 공개·집계된 분석 결과를 설명하는 데만 사용됩니다.
+<p class="footer"><b>생성형 AI 활용 고지</b> · 로컬 Qwen 모델은 공개·집계된 분석 결과를 설명하는 데만 사용됩니다.
 계산된 GMM 유형, 정책 검토 우선순위와 서비스 ID를 변경하지 않으며, 모든 정책 제안은 담당자 확인을 전제로 합니다.<br>
 이음ON 공개 데모에는 대회 제공 원자료, 격자 식별자·좌표와 개인 식별정보가 포함되지 않습니다.</p>
 """, unsafe_allow_html=True)

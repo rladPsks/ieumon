@@ -1,9 +1,8 @@
-"""Public aggregate analytics and optional Gemini generation for the demo."""
+"""Public aggregate analytics and local Qwen generation for the demo."""
 from __future__ import annotations
 
 import json
-import urllib.error
-import urllib.request
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -92,41 +91,69 @@ SYSTEM_PROMPT = """당신은 2026 빅콘테스트 사회적 고립 예방 프로
 """
 
 
-def generate_with_gemini(
+@lru_cache(maxsize=1)
+def load_local_qwen(model_id: str):
+    """Load a small local Qwen model once per Streamlit worker."""
+    try:
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+    except ImportError as exc:
+        raise RuntimeError(
+            "로컬 Qwen 실행 패키지가 설치되지 않았습니다. requirements.txt를 다시 배포해 주세요."
+        ) from exc
+
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        torch_dtype="auto",
+        low_cpu_mem_usage=True,
+    )
+    model.eval()
+    return tokenizer, model, torch
+
+
+def generate_with_qwen(
     question: str,
     context: Mapping[str, Any],
-    api_key: str,
     *,
-    model: str = "gemini-3.5-flash-lite",
+    model_id: str = "Qwen/Qwen2.5-0.5B-Instruct",
     history: list[dict[str, str]] | None = None,
 ) -> str:
     recent = (history or [])[-6:]
-    conversation = "\n".join(f"{row['role']}: {row['content']}" for row in recent)
-    prompt = (
-        f"{SYSTEM_PROMPT}\n\n[공개 집계 컨텍스트]\n"
-        f"{json.dumps(context, ensure_ascii=False)}\n\n"
-        f"[최근 대화]\n{conversation}\n\n[질문]\n{question}"
+    tokenizer, model, torch = load_local_qwen(model_id)
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(
+        {"role": row["role"], "content": row["content"]}
+        for row in recent
+        if row.get("role") in {"user", "assistant"}
     )
-    body = json.dumps({
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.35, "maxOutputTokens": 1200},
-    }, ensure_ascii=False).encode("utf-8")
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-    request = urllib.request.Request(
-        endpoint,
-        data=body,
-        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
-        method="POST",
+    messages.append({
+        "role": "user",
+        "content": (
+            "[공개 집계 컨텍스트]\n"
+            + json.dumps(context, ensure_ascii=False, separators=(",", ":"))
+            + "\n\n[질문]\n"
+            + question
+        ),
+    })
+    rendered = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
     )
-    try:
-        with urllib.request.urlopen(request, timeout=45) as response:
-            result = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")[:500]
-        raise RuntimeError(f"Gemini API HTTP {exc.code}: {detail}") from exc
-    except (urllib.error.URLError, TimeoutError) as exc:
-        raise RuntimeError(f"Gemini API 연결 실패: {exc}") from exc
-    try:
-        return result["candidates"][0]["content"]["parts"][0]["text"].strip()
-    except (KeyError, IndexError, TypeError) as exc:
-        raise RuntimeError("Gemini API 응답에서 생성 문장을 찾지 못했습니다.") from exc
+    inputs = tokenizer(rendered, return_tensors="pt", truncation=True, max_length=12000)
+    with torch.inference_mode():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=480,
+            do_sample=True,
+            temperature=0.35,
+            top_p=0.9,
+            repetition_penalty=1.08,
+            pad_token_id=tokenizer.eos_token_id,
+        )
+    generated = output[0][inputs["input_ids"].shape[1]:]
+    answer = tokenizer.decode(generated, skip_special_tokens=True).strip()
+    if not answer:
+        raise RuntimeError("Qwen이 빈 응답을 반환했습니다.")
+    return answer
