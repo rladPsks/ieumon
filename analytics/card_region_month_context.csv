@@ -1,0 +1,11 @@
+STD_YM,CITY_PROXY,CARD_CONSUMPTION_STATE,CARD_MEMBERSHIP_PROB,CARD_CONTEXT_REVIEW_REQUIRED,CARD_CONTEXT_REVIEW_REASON,CARD_MONTH_AUTO_INTERVENTION_BLOCKED
+202508,강원 춘천시,경미 복합 위축형,0.9930011872,0,,0
+202508,서울 강남구,경미 복합 위축형,0.9935532144,0,,0
+202509,강원 춘천시,경미 복합 위축형,0.9999540078,1,contains_excluded_holiday,1
+202509,서울 강남구,경미 복합 위축형,0.9848557474,1,contains_excluded_holiday;contains_review_required,1
+202510,강원 춘천시,소비 회복·다양성 확장형,0.8146816607,1,contains_excluded_holiday;contains_review_required,1
+202510,서울 강남구,경미 복합 위축형,0.9973583790,1,contains_excluded_holiday,1
+202511,강원 춘천시,경미 복합 위축형,0.9974877486,0,,0
+202511,서울 강남구,경미 복합 위축형,0.9688879784,0,,0
+202512,강원 춘천시,경미 복합 위축형,0.9901476512,1,contains_review_required,1
+202512,서울 강남구,소비 회복·다양성 확장형,0.9997441774,1,contains_review_required,1

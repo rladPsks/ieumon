@@ -1,0 +1,18 @@
+{
+  "analysis_rows": 30466,
+  "analysis_unit": "250m 생활권 × 월",
+  "period": "2025-08~2025-12",
+  "cities": ["강원 춘천시", "서울 강남구"],
+  "unique_grids": 7286,
+  "gmm_types": 5,
+  "persistent_attention_candidates": 429,
+  "card_feature_rows": 42,
+  "card_model_rows": 38,
+  "card_excluded_holiday_rows": 4,
+  "card_city_month_contexts": 10,
+  "card_quality_blocked_contexts": 6,
+  "external_qa": {"PASS": 20, "WARN": 4, "FAIL": 0},
+  "priority_bands": ["정기", "관찰", "높음", "최우선"],
+  "approved_risk_level_1_to_5": false,
+  "disclosure": "집계·비식별 공개 결과이며 대회 제공 원자료, 격자 식별자와 좌표를 포함하지 않습니다."
+}
