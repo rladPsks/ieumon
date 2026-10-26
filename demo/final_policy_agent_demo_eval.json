@@ -1,0 +1,15 @@
+{
+  "report_count": 3,
+  "recommendation_count": 10,
+  "wrong_region_recommendation_count": 0,
+  "inactive_policy_recommendation_count": 0,
+  "unknown_policy_service_count": 0,
+  "official_source_coverage": 1.0,
+  "policy_evidence_coverage": 1.0,
+  "policy_citation_coverage": 1.0,
+  "human_approval_coverage": 1.0,
+  "external_context_coverage": 1.0,
+  "rag_evidence_coverage": 1.0,
+  "passed": true,
+  "disclosure": "공개 데모 출력 계약 검증값이며 대회 제공 원자료를 포함하지 않습니다."
+}

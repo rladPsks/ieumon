@@ -1,0 +1,95 @@
+{
+  "demo_disclosure": "비식별·집계 공개 데모이며 대회 제공 원자료, 격자 식별자, 좌표를 포함하지 않습니다.",
+  "record_count": 30466,
+  "policy_as_of": "2026-10-25",
+  "pipeline": {"mode": "public_sanitized_demo"},
+  "rag": {
+    "document_count": 26,
+    "retrievable_document_count": 12,
+    "retrievable_additional_document_count": 0,
+    "linked_service_count": 19
+  },
+  "representative_reports": [
+    {
+      "case_id": "CASE_1_COMPLEX_TOP",
+      "case_role": "복합 시간활동 위축형 · 최우선 · 품질 신호 확인 사례",
+      "region_name": "강원 춘천시",
+      "period": "2025-09",
+      "activity_type": "복합 시간활동 위축형",
+      "priority_level": "최우선",
+      "membership_probability": 0.91,
+      "decision_status": "hold_for_human_review",
+      "interpretations": [
+        "주간 활동과 유효 활동시간이 함께 감소한 생활권 유형입니다.",
+        "2개월 이상 높은 정책 검토 우선순위가 이어져 지속 관찰이 필요합니다.",
+        "개인 고립 진단이 아니라 담당자가 현장 상황을 확인할 지역 단서입니다."
+      ],
+      "card_context": {
+        "CARD_CONSUMPTION_STATE": "도시 공통 소비맥락에서 검토 필요 신호가 확인되었습니다.",
+        "CARD_CONTEXT_REVIEW_REASON": "도시×월 공유 맥락이므로 격자 고유 원인으로 해석하지 않습니다."
+      },
+      "structural_vulnerability": {"interpretation": "공개 통계 기반 지역 공유 맥락", "values": {"공개 범위": "시군구 집계값만 사용"}},
+      "service_access_vulnerability": {"interpretation": "시설 접근성은 직선거리 보조지표이며 실제 이용 가능성을 뜻하지 않습니다.", "values": {"공개 범위": "비식별 설명만 제공"}},
+      "recommended_services": [
+        {"service_id": "CHUNCHEON003", "service_name": "우유배달 안부확인사업", "support_purpose": "정기적인 안부 확인 연결 가능성을 검토합니다.", "conditions_to_check": ["현재 운영 여부", "대상 기준과 신청 경로"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_id": "CHUNCHEON004", "service_name": "춘천시 노인맞춤돌봄서비스", "support_purpose": "돌봄 필요도와 기존 이용 여부를 확인합니다.", "conditions_to_check": ["연령·가구·돌봄 필요도", "중복 이용 제한"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_id": "CHUNCHEON005", "service_name": "춘천안심서비스", "support_purpose": "비대면 안부 확인 수단의 적합성을 검토합니다.", "conditions_to_check": ["기기·통신 환경", "본인 동의"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_id": "NATIONAL003", "service_name": "노인맞춤돌봄서비스", "support_purpose": "전국 단위 돌봄서비스의 지역 시행 조건을 확인합니다.", "conditions_to_check": ["거주지 시행기관", "신청 자격"], "official_source_url": "https://www.mohw.go.kr/menu.es?mid=a10712010400"}
+      ],
+      "retrieved_evidence": [
+        {"service_ids": ["CHUNCHEON003", "CHUNCHEON004", "CHUNCHEON005"], "document_id": "DOC-CHUNCHEON-WELFARE", "chunk_id": "CH-CARE-01", "title": "춘천시 공식 복지 안내", "section_type": "service_guide", "official_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_ids": ["NATIONAL003"], "document_id": "DOC-MOHW-CARE", "chunk_id": "CH-NATIONAL-01", "title": "보건복지부 노인맞춤돌봄서비스", "section_type": "official_guide", "official_url": "https://www.mohw.go.kr/menu.es?mid=a10712010400"}
+      ],
+      "generated_explanation": {"summary": "활동변화와 지속성 신호가 함께 나타났지만 카드 품질 신호가 있어 자동 개입하지 않고 담당자 확인 단계로 보류합니다.", "generation_mode": "validated_rule_fallback"},
+      "data_quality_warnings": ["카드 공유 맥락 검토가 필요해 사람 승인 전 자동 개입을 차단했습니다."]
+    },
+    {
+      "case_id": "CASE_2_GRADUAL_HIGH",
+      "case_role": "점진적 활동시간 축소형 · 높은 우선순위 · 조기 검토 사례",
+      "region_name": "강원 춘천시",
+      "period": "2025-08",
+      "activity_type": "점진적 활동시간 축소형",
+      "priority_level": "높음",
+      "membership_probability": 0.86,
+      "decision_status": "pending_human_approval",
+      "interpretations": ["활동시간이 점진적으로 줄어드는 유형입니다.", "급격한 위험 확정이 아니라 조기 확인이 필요한 변화 신호입니다."],
+      "card_context": {"CARD_CONSUMPTION_STATE": "도시 공통 소비맥락은 참고 정보로만 연결했습니다."},
+      "structural_vulnerability": {"interpretation": "지역 공유 구조 맥락", "values": {"해석": "개인 속성으로 사용하지 않음"}},
+      "service_access_vulnerability": {"interpretation": "직선거리 기반 접근성 보조 맥락", "values": {}},
+      "recommended_services": [
+        {"service_id": "CHUNCHEON002", "service_name": "어르신 병원동행서비스", "support_purpose": "외부 활동 제약과 의료 이동 필요를 함께 확인합니다.", "conditions_to_check": ["동행 필요성", "예약·운영 범위"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_id": "CHUNCHEON005", "service_name": "춘천안심서비스", "support_purpose": "낮은 부담의 안부 확인 수단을 검토합니다.", "conditions_to_check": ["본인 동의", "기기 이용 가능성"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"},
+        {"service_id": "CHUNCHEON004", "service_name": "춘천시 노인맞춤돌봄서비스", "support_purpose": "일상생활 지원 필요를 확인합니다.", "conditions_to_check": ["대상 기준", "기존 서비스 이용 여부"], "official_source_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"}
+      ],
+      "retrieved_evidence": [{"service_ids": ["CHUNCHEON002", "CHUNCHEON004", "CHUNCHEON005"], "document_id": "DOC-CHUNCHEON-WELFARE", "chunk_id": "CH-CARE-02", "title": "춘천시 공식 복지 안내", "section_type": "service_guide", "official_url": "https://www.chuncheon.go.kr/village/nam-myeon/news/village/?bbsId=BBSMSTR_000000000200&flag=view&nttId=15172"}],
+      "generated_explanation": {"summary": "점진적인 변화 신호에 맞춰 부담이 낮은 안부 확인과 이동·돌봄 지원의 적합성을 담당자가 검토합니다.", "generation_mode": "validated_rule_fallback"},
+      "data_quality_warnings": []
+    },
+    {
+      "case_id": "CASE_3_REVIEW",
+      "case_role": "혼합 신호 · 불확실성 우선 확인 사례",
+      "region_name": "서울특별시 강남구",
+      "period": "2025-12",
+      "activity_type": "혼합 활동변화형",
+      "priority_level": "관찰",
+      "membership_probability": 0.58,
+      "decision_status": "hold_for_human_review",
+      "interpretations": ["여러 활동변화가 섞여 군집 소속 불확실성이 높습니다.", "자동 추천 확정 대신 담당자 검토를 우선합니다."],
+      "card_context": {"CARD_CONSUMPTION_STATE": "도시 공통 소비맥락은 원인 추정에 사용하지 않습니다."},
+      "structural_vulnerability": {"interpretation": "지역 공유 맥락", "values": {}},
+      "service_access_vulnerability": {"interpretation": "서비스 존재와 실제 이용 가능성은 별도 확인합니다.", "values": {}},
+      "recommended_services": [
+        {"service_id": "GANGNAM001", "service_name": "마음건강검진 및 상담지원사업", "support_purpose": "상담 필요 여부를 본인 동의하에 확인할 후보입니다.", "conditions_to_check": ["본인 의사", "상담 대상·예약 조건"], "official_source_url": "https://health.gangnam.go.kr/web/business/mental/health/sub03.do"},
+        {"service_id": "GANGNAM005", "service_name": "강남구 1인가구 소모임 운영", "support_purpose": "사회관계 활동 참여 의향을 확인합니다.", "conditions_to_check": ["모집 기간", "대상·활동 일정"], "official_source_url": "https://bokji.gangnam.go.kr/board/BBS_SUPPORT/1668/view.do?mid=ID03_02&type="},
+        {"service_id": "SEOUL001", "service_name": "외로움안녕120", "support_purpose": "낮은 문턱의 정보·상담 연결 가능성을 검토합니다.", "conditions_to_check": ["현재 운영 범위", "상담 연결 절차"], "official_source_url": "https://mediahub.seoul.go.kr/archives/2019227"}
+      ],
+      "retrieved_evidence": [
+        {"service_ids": ["GANGNAM001"], "document_id": "DOC-GANGNAM-MENTAL", "chunk_id": "CH-GN-01", "title": "강남구 보건소 마음건강 공식 안내", "section_type": "official_guide", "official_url": "https://health.gangnam.go.kr/web/business/mental/health/sub03.do"},
+        {"service_ids": ["GANGNAM005"], "document_id": "DOC-GANGNAM-SINGLE", "chunk_id": "CH-GN-02", "title": "강남구 1인가구 소모임 공식 안내", "section_type": "official_notice", "official_url": "https://bokji.gangnam.go.kr/board/BBS_SUPPORT/1668/view.do?mid=ID03_02&type="},
+        {"service_ids": ["SEOUL001"], "document_id": "DOC-SEOUL-LONELINESS", "chunk_id": "CH-SEOUL-01", "title": "서울시 외로움 대응 공식 안내", "section_type": "official_guide", "official_url": "https://mediahub.seoul.go.kr/archives/2019227"}
+      ],
+      "generated_explanation": {"summary": "군집 소속 불확실성이 높아 자동 개입을 차단하고, 공식 상담·관계지원 후보만 담당자 확인용으로 제시합니다.", "generation_mode": "validated_rule_fallback"},
+      "data_quality_warnings": ["낮은 군집 소속확률로 사람 검토가 필요합니다."]
+    }
+  ]
+}
