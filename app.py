@@ -12,12 +12,13 @@ import streamlit as st
 from analysis_data import (
     FEATURE_LABELS,
     TYPE_GUIDE,
+    answer_is_usable,
+    focused_agent_context,
     generate_with_qwen,
+    grounded_action_fallback,
     load_analytics,
-    public_llm_context,
 )
 from dashboard_data import (
-    answer_question,
     dashboard_summary,
     evidence_rows,
     load_agent_payload,
@@ -33,6 +34,8 @@ EVALUATION = ROOT / "demo/final_policy_agent_demo_eval.json"
 st.set_page_config(page_title="이음ON | 사회적 고립 예방 분석 Agent", page_icon="◉", layout="wide")
 st.markdown("""
 <style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css');
+html,body,[class*="css"],.stApp,.stApp p,.stApp div,.stApp span,.stApp label,.stApp button,.stApp input,.stApp textarea,h1,h2,h3,h4,h5,h6{font-family:'Pretendard Variable','Pretendard','Noto Sans KR',Arial,sans-serif!important}
 .stApp{background:#fff9e9;color:#111}[data-testid="stHeader"]{background:rgba(255,249,233,.94)}
 .block-container{max-width:1480px;padding-top:1.25rem;padding-bottom:2.5rem}
 [data-testid="stSidebar"]{border-right:2px solid #ffb23e;background:#fffdf7}
@@ -45,6 +48,9 @@ st.markdown("""
 .flow-num{font-size:.72rem;font-weight:900;color:#e86635;letter-spacing:.08em}.flow-title{font-size:1.02rem;font-weight:850;margin:.28rem 0}.flow-text{font-size:.86rem;color:#4d4538;line-height:1.5}
 .callout{border:2px solid #ffad3d;border-left:8px solid #ff754c;background:white;border-radius:12px;padding:.85rem 1rem;margin:.5rem 0}
 div[data-testid="stMetric"]{background:white;border:2px solid #f0aa45;border-radius:16px;padding:.78rem 1rem;box-shadow:4px 4px 0 #ffe08a}
+div[data-testid="stMetric"] [data-testid="stMetricLabel"]{font-size:.98rem!important;font-weight:700!important;color:#463b2d!important}
+div[data-testid="stMetric"] [data-testid="stMetricValue"]{font-size:1.72rem!important;line-height:1.2!important;font-weight:720!important;color:#111!important}
+div[data-testid="stMetric"] [data-testid="stMetricDelta"]{font-size:.78rem!important}
 div[data-testid="stExpander"]{background:white;border:1px solid #f1b657;border-radius:14px}
 button[kind="secondary"]{border:1.5px solid #f0a03b!important;background:#fff!important;color:#171717!important}
 button[kind="secondary"]:hover{border-color:#f36f4a!important;background:#fff3cf!important}
@@ -290,17 +296,22 @@ with tabs[5]:
         with st.chat_message("user"): st.markdown(question)
         with st.chat_message("assistant"):
             try:
+                evidence_package = focused_agent_context(question, payload, analytics)
                 with st.spinner("Qwen이 공개 집계 결과를 종합하고 있습니다..."):
                     answer = generate_with_qwen(
                         question,
-                        public_llm_context(payload, analytics),
+                        evidence_package,
                         model_id=qwen_model,
                         history=st.session_state.messages[:-1],
                     )
+                if not answer_is_usable(answer, question):
+                    answer = grounded_action_fallback(question, evidence_package)
+                    st.caption("근거 누락 또는 반복을 감지해 검증된 실행형 답변으로 교체했습니다.")
             except RuntimeError as exc:
                 st.error(str(exc))
-                answer = answer_question(question, payload)["answer"]
-                st.caption("모델 실행이 불가능해 검증된 로컬 응답을 표시했습니다.")
+                evidence_package = focused_agent_context(question, payload, analytics)
+                answer = grounded_action_fallback(question, evidence_package)
+                st.caption("모델 실행이 불가능해 검증된 실행형 답변을 표시했습니다.")
             st.markdown(answer)
         st.session_state.messages.append({"role": "assistant", "content": answer})
     with st.expander("Agent가 답할 때 지키는 범위"):
