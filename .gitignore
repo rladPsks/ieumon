@@ -1,1 +1,6 @@
-__pycache__/\n*.py[cod]\n.env\n.streamlit/secrets.toml\noutputs/\ndata/\n
+__pycache__/
+*.py[cod]
+.env
+.streamlit/secrets.toml
+outputs/
+data/
