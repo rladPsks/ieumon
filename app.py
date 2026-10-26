@@ -35,7 +35,7 @@ st.set_page_config(page_title="이음ON | 사회적 고립 예방 분석 Agent",
 st.markdown("""
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css');
-html,body,[class*="css"],.stApp,.stApp p,.stApp div,.stApp span,.stApp label,.stApp button,.stApp input,.stApp textarea,h1,h2,h3,h4,h5,h6{font-family:'Pretendard Variable','Pretendard','Noto Sans KR',Arial,sans-serif!important}
+html,body,.stApp,.stApp p,.stApp label,.stApp button,.stApp input,.stApp textarea,.stMarkdown,h1,h2,h3,h4,h5,h6{font-family:'Pretendard Variable','Pretendard','Noto Sans KR',Arial,sans-serif!important}
 .stApp{background:#fff9e9;color:#111}[data-testid="stHeader"]{background:rgba(255,249,233,.94)}
 .block-container{max-width:1480px;padding-top:1.25rem;padding-bottom:2.5rem}
 [data-testid="stSidebar"]{border-right:2px solid #ffb23e;background:#fffdf7}
@@ -44,7 +44,7 @@ html,body,[class*="css"],.stApp,.stApp p,.stApp div,.stApp span,.stApp label,.st
 .eyebrow{color:#7b3d00;font-weight:900;font-size:.76rem;letter-spacing:.12em}
 .pill{display:inline-block;border:1px solid #ed9b2e;border-radius:999px;padding:.32rem .7rem;font-size:.76rem;font-weight:800;margin:.15rem .2rem .15rem 0}
 .pill-blue{color:#1a4e88;background:#dcecff}.pill-green{color:#245c3e;background:#dff3df}.pill-amber{color:#6d3b00;background:#ffe6a9}.pill-gray{color:#343434;background:#f1eadc}
-.flow{background:white;border:2px solid #f4a33c;border-radius:17px;padding:1rem 1.05rem;min-height:132px;box-shadow:4px 4px 0 #ffd267}
+.flow{background:white;border:2px solid #f4a33c;border-radius:17px;padding:1rem 1.05rem;min-height:150px;box-shadow:4px 4px 0 #ffd267}
 .flow-num{font-size:.72rem;font-weight:900;color:#e86635;letter-spacing:.08em}.flow-title{font-size:1.02rem;font-weight:850;margin:.28rem 0}.flow-text{font-size:.86rem;color:#4d4538;line-height:1.5}
 .callout{border:2px solid #ffad3d;border-left:8px solid #ff754c;background:white;border-radius:12px;padding:.85rem 1rem;margin:.5rem 0}
 div[data-testid="stMetric"]{background:white;border:2px solid #f0aa45;border-radius:16px;padding:.78rem 1rem;box-shadow:4px 4px 0 #ffe08a}
@@ -62,6 +62,26 @@ button[kind="secondary"]:hover{border-color:#f36f4a!important;background:#fff3cf
 .impact-kicker{font-size:.72rem;font-weight:850;letter-spacing:.08em;color:#ffd45d}.impact-title{font-size:1.1rem;font-weight:850;margin:.35rem 0}.impact-text{font-size:.86rem;line-height:1.55;color:#f4ead8}
 .loop{background:#fff;border:1.5px solid #efb24f;border-radius:14px;padding:.9rem 1rem;min-height:118px}.loop b{font-size:.95rem}.loop p{font-size:.82rem;color:#5e5344;line-height:1.5;margin:.35rem 0 0}
 .insight{background:#fff4cf;border-left:6px solid #ef6b43;border-radius:10px;padding:.9rem 1rem;margin:.65rem 0;font-size:.9rem;line-height:1.6}
+[data-testid="stVerticalBlock"]{gap:1rem}
+[data-testid="stHorizontalBlock"]{gap:1.1rem}
+[data-testid="column"]{min-width:0}
+[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li{line-height:1.7}
+[data-testid="stExpander"]{overflow:hidden;margin:.8rem 0}
+[data-testid="stExpander"] details summary{min-height:3.5rem;padding:.75rem 1rem;align-items:center}
+[data-testid="stExpander"] details summary p{margin:0!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere}
+[data-testid="stExpander"] details>div{padding:.35rem 1rem 1rem}
+[data-testid="stChatMessage"]{padding:1rem 1.15rem;margin:.65rem 0;border-radius:14px;background:rgba(255,255,255,.55)}
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"]{padding-top:.1rem}
+[data-testid="stChatMessage"] p{margin:.1rem 0 .55rem;line-height:1.7}
+[data-testid="stChatMessageAvatarUser"],[data-testid="stChatMessageAvatarAssistant"]{overflow:hidden;flex:0 0 2.25rem}
+[data-testid="stChatMessageAvatarUser"] span,[data-testid="stChatMessageAvatarAssistant"] span{font-family:'Material Symbols Rounded','Material Icons'!important;font-size:1.35rem!important;line-height:1!important}
+[data-testid="stChatInput"]{margin-top:1rem}
+[data-baseweb="tab-list"]{overflow-x:auto;overflow-y:hidden}
+[data-baseweb="tab"]{white-space:nowrap;padding-left:.9rem!important;padding-right:.9rem!important}
+.vega-embed{padding:.25rem 0 .75rem!important}
+.flow,.impact,.loop{height:100%;box-sizing:border-box;overflow-wrap:anywhere}
+@media(max-width:1100px){.flow{min-height:160px}.loop{min-height:150px}.impact{min-height:180px}}
+@media(max-width:800px){.hero h1{font-size:1.75rem}.block-container{padding-left:1rem;padding-right:1rem}.flow,.loop,.impact{min-height:auto}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -90,8 +110,7 @@ st.markdown("""
 <div class="hero">
     <div class="eyebrow">BIGCONTEST 2026 · 생활권 활동변화 기반 복지정책 검토 AGENT</div>
   <h1>보이지 않던 생활권의 변화를, 놓치지 않는 연결로</h1>
-  <p>30,466개 생활권×월 활동변화에서 5개 유형을 발견하고, 지속성과 지역 맥락을 더해<br>
-  담당자가 확인할 정책 개입 후보를 제시하는 Human-in-the-loop 분석 Agent</p>
+  <p>30,466개 생활권×월 활동변화에서 5개 유형을 발견하고, 지속성과 지역 맥락을 더해 담당자가 확인할 정책 개입 후보를 제시하는 Human-in-the-loop 분석 Agent</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -290,8 +309,10 @@ with tabs[4]:
         for warning in report.get("data_quality_warnings", []): st.warning(warning)
     with right:
         st.markdown("##### 공식 정책 후보")
+        st.caption("정책명 → 지원 목적 → 담당자 확인조건 → 공식 출처 순으로 확인합니다.")
         for service in report.get("recommended_services", []):
-            with st.expander(f"{service['service_name']} · {service['service_id']}", expanded=True):
+            with st.expander(service["service_name"], expanded=True):
+                st.caption(f"정책 ID · {service['service_id']}")
                 st.write(service.get("support_purpose", "담당자 검토 필요"))
                 for check in service.get("conditions_to_check", []): st.write(f"- {check}")
                 if service.get("official_source_url"): st.link_button("공식 출처 확인", service["official_source_url"], width="stretch")
