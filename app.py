@@ -58,6 +58,10 @@ button[kind="secondary"]:hover{border-color:#f36f4a!important;background:#fff3cf
 [data-baseweb="tab"]{font-weight:750;color:#3a3124}
 [aria-selected="true"]{color:#d9572b!important;border-bottom-color:#f36f4a!important}
 .small{font-size:.82rem;color:#645847;line-height:1.55}.footer{font-size:.8rem;color:#695b46;line-height:1.6}
+.impact{background:#17130d;color:#fff;border-radius:18px;padding:1.15rem 1.25rem;min-height:150px;border:2px solid #17130d}
+.impact-kicker{font-size:.72rem;font-weight:850;letter-spacing:.08em;color:#ffd45d}.impact-title{font-size:1.1rem;font-weight:850;margin:.35rem 0}.impact-text{font-size:.86rem;line-height:1.55;color:#f4ead8}
+.loop{background:#fff;border:1.5px solid #efb24f;border-radius:14px;padding:.9rem 1rem;min-height:118px}.loop b{font-size:.95rem}.loop p{font-size:.82rem;color:#5e5344;line-height:1.5;margin:.35rem 0 0}
+.insight{background:#fff4cf;border-left:6px solid #ef6b43;border-radius:10px;padding:.9rem 1rem;margin:.65rem 0;font-size:.9rem;line-height:1.6}
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,6 +124,28 @@ with tabs[0]:
     metrics[3].metric("지속 관찰 후보", f"{model['persistent_attention_candidates']:,}개", border=True)
     metrics[4].metric("외부데이터 QA", "FAIL 0", border=True)
     st.caption("지속 관찰 후보는 ‘높음·최우선’ 정책 검토 우선순위가 2개월 이상 연속된 생활권이며 개인 위험확률이 아닙니다.")
+
+    st.markdown("#### 이 결과가 만드는 공공가치")
+    impact_cols = st.columns(3)
+    impacts = [
+        ("사각지대 선제 발굴", "신청을 기다리기 전에", "반복되는 생활권 활동 위축을 먼저 포착해 담당자가 확인할 후보군을 좁힙니다."),
+        ("한정된 행정자원 배분", "429개를 같은 방식으로 보지 않고", "지속성·활동유형·접근성·품질경고를 함께 보며 현장 확인 순서를 정합니다."),
+        ("발굴에서 연결까지", "예측 점수로 끝내지 않고", "공식 복지정책 근거와 연결하고, 불확실한 사례는 자동개입 대신 사람 검토로 넘깁니다."),
+    ]
+    for col, (kicker, title, text) in zip(impact_cols, impacts):
+        col.markdown(f'<div class="impact"><div class="impact-kicker">{kicker}</div><div class="impact-title">{title}</div><div class="impact-text">{text}</div></div>', unsafe_allow_html=True)
+
+    st.markdown("#### 이음ON의 정책 의사결정 루프")
+    loop_cols = st.columns(5)
+    loops = [
+        ("① 탐지", "생활권 활동변화에서 평소와 다른 신호를 찾습니다."),
+        ("② 선별", "한 달 급락보다 반복되는 높은 우선순위를 좁힙니다."),
+        ("③ 검증", "카드 품질·외부충격·시설 접근성을 확인합니다."),
+        ("④ 연결", "공식 정책 DB에서 대응 후보와 확인조건을 제시합니다."),
+        ("⑤ 재평가", "현장 판단을 남기고 다음 달 회복·지속 여부를 다시 봅니다."),
+    ]
+    for col, (title, text) in zip(loop_cols, loops):
+        col.markdown(f'<div class="loop"><b>{title}</b><p>{text}</p></div>', unsafe_allow_html=True)
 
     cols = st.columns(4)
     flow = [
@@ -230,7 +256,8 @@ with tabs[3]:
     ).properties(height=78)
     st.altair_chart(bars, width="stretch")
     st.markdown("""
-    <div class="callout"><b>해석</b><br><span class="small">춘천은 절대 후보 수가 많고, 강남은 전체 생활권 대비 후보 비율이 더 높습니다. 도시의 격자 수와 관측가능 범위가 다르므로 후보 수만으로 도시 위험도를 비교할 수 없습니다.</span></div>
+    <div class="callout"><b>숫자에서 의사결정으로</b><br><span class="small">춘천은 절대 후보 수가 많아 <b>넓은 후보군을 추가 선별하는 운영</b>이 중요하고, 강남은 후보 수는 적지만 전체 생활권 대비 비율이 높아 <b>반복 신호가 나타난 생활권을 집중 확인</b>하는 전략이 적합합니다. 후보 수 자체는 도시 위험도나 고립 인구 수가 아닙니다.</span></div>
+    <div class="insight"><b>429개의 의미</b> · ‘고립된 429개 지역’을 찾아냈다는 뜻이 아니라, 기존 신청·신고만으로는 먼저 보기 어려웠던 생활권 가운데 <b>담당자가 다음 단계에서 확인할 범위를 데이터로 좁혔다</b>는 의미입니다.</div>
     """, unsafe_allow_html=True)
     priority = pd.DataFrame([
         {"단계":"정기", "의미":"현재 활동 유지", "조치":"예방형 정보·정기 갱신"},
@@ -273,14 +300,14 @@ with tabs[4]:
     st.dataframe(evidence, hide_index=True, width="stretch", column_config={"공식 URL": st.column_config.LinkColumn("공식 URL")})
 
 with tabs[5]:
-    st.markdown("### 공개 집계 결과에 자유롭게 질문하세요")
+    st.markdown("### 담당자의 다음 행동을 묻는 정책 Copilot")
     qwen_model = secret("QWEN_MODEL_ID", "Qwen/Qwen2.5-0.5B-Instruct")
-    st.caption("API 키 없이 배포 서버에서 실행되는 Qwen이 GMM·카드·지속관찰·공식 정책 집계 결과를 종합합니다. 최초 질문은 모델 초기화로 다소 지연될 수 있습니다.")
+    st.caption("분석값을 다시 설명하는 챗봇이 아니라, 공개 집계 근거 안에서 ‘어디부터 확인하고 무엇을 연결할지’를 정리합니다. 최초 질문은 모델 초기화로 다소 지연될 수 있습니다.")
     examples = [
-        "5개 GMM 유형의 차이를 핵심 지표 중심으로 설명해줘",
-        "춘천 370개와 강남 59개를 어떻게 해석해야 해?",
-        "복합 시간활동 위축형에 어떤 개입이 적절하고 왜 그래?",
-        "이 분석으로 개인의 고립을 판단할 수 없는 이유를 설명해줘",
+        "이번 달 현장 확인 대상을 어떤 순서로 좁혀야 해?",
+        "춘천 370개와 강남 59개라면 지역별 운영전략을 어떻게 달리해야 해?",
+        "복합 시간활동 위축형을 발견하면 담당자가 무엇부터 확인해야 해?",
+        "어떤 경우에 자동 개입하지 말고 사람 검토로 보류해야 해?",
     ]
     cols = st.columns(2)
     for idx, example in enumerate(examples):
@@ -290,7 +317,7 @@ with tabs[5]:
         st.session_state.messages = []
     for message in st.session_state.messages:
         with st.chat_message(message["role"]): st.markdown(message["content"])
-    question = st.chat_input("예: 위축형과 회복형을 비교하고 정책 대응 차이를 설명해줘") or st.session_state.pop("pending_question", None)
+    question = st.chat_input("예: 인력이 제한돼 있다면 이번 달 어떤 후보부터 확인해야 해?") or st.session_state.pop("pending_question", None)
     if question:
         st.session_state.messages.append({"role": "user", "content": question})
         with st.chat_message("user"): st.markdown(question)
